@@ -37,18 +37,32 @@ canvas{display:block}
 #words{font-size:clamp(22px,6vw,30px);line-height:2.2;min-height:150px;white-space:pre-line;font-weight:700}
 
 /* تنسيقات صور الذكريات */
-.gallery {
+.gallery-wrap {
   display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px 16px;
+}
+.gallery-wrap.on {
+  display: flex;
+  animation: fade 1.5s ease;
+}
+.gallery-title {
+  font-size: clamp(20px, 5vw, 26px);
+  font-weight: 800;
+  margin-bottom: 25px;
+  text-align: center;
+  color: var(--neon2);
+  text-shadow: 0 0 15px rgba(255, 107, 138, 0.4);
+}
+.gallery {
+  display: flex;
   flex-direction: column;
   gap: 20px;
   width: 100%;
   max-width: 500px;
-  margin: 40px auto;
-  padding: 0 16px;
-}
-.gallery.on {
-  display: flex;
-  animation: fade 1.5s ease;
+  margin: 0 auto;
 }
 .memory-img {
   width: 100%;
@@ -114,11 +128,14 @@ canvas{display:block}
   <div class="stage" id="stage"><canvas id="cv" aria-label="عين تتحول إلى قلب"></canvas></div>
   
   <!-- صور الذكريات -->
-  <div class="gallery" id="gallery">
-    <img src="img1.jpg" class="memory-img" alt="ذكرى 1" onerror="this.style.display='none'">
-    <img src="img2.jpg" class="memory-img" alt="ذكرى 2" onerror="this.style.display='none'">
-    <img src="img3.jpg" class="memory-img" alt="ذكرى 3" onerror="this.style.display='none'">
-    <img src="img4.jpg" class="memory-img" alt="ذكرى 4" onerror="this.style.display='none'">
+  <div class="gallery-wrap" id="galleryWrap">
+    <div class="gallery-title">جزء بسيط من ذكرياتي مع روحي 🤍</div>
+    <div class="gallery" id="gallery">
+      <img src="img1.jpg" class="memory-img" alt="ذكرى 1" onerror="this.style.display='none'">
+      <img src="img2.jpg" class="memory-img" alt="ذكرى 2" onerror="this.style.display='none'">
+      <img src="img3.jpg" class="memory-img" alt="ذكرى 3" onerror="this.style.display='none'">
+      <img src="img4.jpg" class="memory-img" alt="ذكرى 4" onerror="this.style.display='none'">
+    </div>
   </div>
 
   <!-- الكلام -->
@@ -129,7 +146,8 @@ canvas{display:block}
 </section>
 
 <script>
-const TEXT="بعرف لي خلقك خلق غيرك مليون غيرك،\nبس والله ما حدا بيسوا رمش عينك يا روحي 🤍";
+// النص الجديد يلي طلبته
+const TEXT="بعرف إنو الله خلق مليون غيرك، ويمكن في أحلى وأجمل، بس والله ما حدا فيهن بيسوى رمش من عينك يا سوسو، إنتِ غير عن الكل، وإلك مكانة ما حدا بيقدر ياخدها، ولو يرجع فيني الزمن ألف مرة بختارك إنتِ بكل مرة. ❤️";
 const $=id=>document.getElementById(id);
 const show=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');scrollTo(0,0)};
 const norm=s=>s.trim().toLowerCase().replace(/[أإآ]/g,'ا').replace(/\s+/g,' ');
@@ -149,10 +167,11 @@ muteBtn.onclick = () => {
 };
 
 function check(){
+  // أضفت خيار "سوسو" عشان تقدر تكتب اسمها وتفتح
   const v=norm($('who').value);
-  if(['انا','ana','me','i'].includes(v)){
+  if(['انا','ana','me','i','سوسو','soso','sousou'].includes(v)){
     show('s2');
-    // تشغيل الأغنية بعد الضغط
+    // تشغيل الأغنية
     audio.volume = 0.4;
     audio.play().then(() => {
       muteBtn.classList.add('on');
@@ -275,8 +294,8 @@ function finish(){
   const stage = $('stage');
   stage.classList.add('hidden');
   
-  const gallery = $('gallery');
-  gallery.classList.add('on');
+  const galleryWrap = $('galleryWrap');
+  galleryWrap.classList.add('on');
   const imgs = document.querySelectorAll('.memory-img');
   
   // نخفض صوت الأغنية شوي عشان نسمع الكلام
@@ -286,9 +305,9 @@ function finish(){
     setTimeout(() => {
       img.classList.add('show');
       if(index === imgs.length - 1) {
-        setTimeout(showText, 2000);
+        setTimeout(showText, 2500); // زدت الوقت شوي عشان تتطلع الصور حلوة قبل الكلام
       }
-    }, index * 800);
+    }, index * 900);
   });
   
   if(imgs.length === 0) {
@@ -307,10 +326,9 @@ function showText() {
     w.textContent+=ch[i++];
     if(i>=ch.length){
       clearInterval(t);
-      // نرجع نرفع الصوت شوي بعد ما يخلص الكلام
       audio.volume = 0.4;
     }
-  },85);
+  }, 80); // سرعة الكتابة (كل 80 مللي ثانية حرف)
 }
 </script>
 </body>
