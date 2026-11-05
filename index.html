@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>يا روحي ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050204;--bg2:#2a0713;--neon:#ff1f4b;--neon2:#ff6b8a;--text:#ffeef2;--muted:#e8a9b8;--card:rgba(255,255,255,.07);--line:rgba(255,80,110,.6);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#fff6f8;--bg2:#ffd6df;--neon:#c2002f;--neon2:#f0446a;--text:#4a0d1c;--muted:#8d3550;--card:rgba(255,255,255,.75);--line:rgba(194,0,47,.6);color-scheme:light}}
+:root[data-theme="light"]{--bg:#fff6f8;--bg2:#ffd6df;--neon:#c2002f;--neon2:#f0446a;--text:#4a0d1c;--muted:#8d3550;--card:rgba(255,255,255,.75);--line:rgba(194,0,47,.6);color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;font-family:'Tajawal',Tahoma,Arial,sans-serif;color:var(--text);background:radial-gradient(ellipse at 50% 40%,var(--bg2),var(--bg) 70%) fixed;background-color:var(--bg);overflow-x:hidden}
+.screen{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+.screen.on{display:flex;animation:fade .7s ease}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.neon{background:linear-gradient(120deg,var(--neon2),var(--neon));-webkit-background-clip:text;background-clip:text;color:transparent}
+h1{font-size:clamp(30px,8vw,46px);margin:0 0 16px;font-weight:800;line-height:1.5}
+p{color:var(--muted);font-size:18px;margin:0 0 22px;line-height:1.8}
+input{font:inherit;font-size:22px;text-align:center;width:min(300px,85%);padding:14px;border-radius:18px;border:1.5px solid var(--line);background:var(--card);color:var(--text);outline:none}
+input:focus{border-color:var(--neon2)}
+button{font:inherit;font-weight:700;font-size:20px;margin-top:20px;padding:13px 44px;border:0;border-radius:999px;background:linear-gradient(135deg,var(--neon),var(--neon2));color:#fff;cursor:pointer;box-shadow:0 8px 28px rgba(255,31,75,.35)}
+button:active{transform:scale(.96)}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.msg{min-height:28px;color:var(--neon2);margin-top:14px}
+.beat{font-size:60px;animation:beat 1.2s infinite}
+@keyframes beat{50%{transform:scale(1.16)}}
+#s2{justify-content:flex-start;padding:0}
+.stage{min-height:100vh;width:100%;display:flex;align-items:center;justify-content:center;transition:opacity 1s ease, height 1s ease}
+.stage.hidden{opacity:0;height:0;min-height:0;overflow:hidden;pointer-events:none}
+canvas{display:block}
+.cont{display:none;max-width:640px;margin:0 auto;padding:10px 24px 90px;text-align:center}
+.cont.on{display:block;animation:fade 1s ease}
+.cont h2{font-size:34px;margin:0 0 18px}
+#words{font-size:clamp(22px,6vw,30px);line-height:2.2;min-height:150px;white-space:pre-line;font-weight:700}
+
+/* تنسيقات صور الذكريات */
+.gallery-wrap {display: none;flex-direction: column;align-items: center;width: 100%;padding: 20px 16px;}
+.gallery-wrap.on {display: flex;animation: fade 1.5s ease;}
+.gallery-title {font-size: clamp(20px, 5vw, 26px);font-weight: 800;margin-bottom: 25px;text-align: center;color: var(--neon2);text-shadow: 0 0 15px rgba(255, 107, 138, 0.4);}
+.gallery {display: flex;flex-direction: column;gap: 20px;width: 100%;max-width: 500px;margin: 0 auto;}
+.memory-img {width: 100%;border-radius: 18px;border: 2px solid var(--line);box-shadow: 0 10px 30px rgba(255, 31, 75, 0.2);opacity: 0;transform: translateY(20px) scale(0.95);transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);}
+.memory-img.show {opacity: 1;transform: translateY(0) scale(1);}
+
+/* زر كتم الصوت */
+#muteBtn {position: fixed;top: calc(16px + env(safe-area-inset-top, 0px));left: 16px;z-index: 100;background: var(--card);border: 1.5px solid var(--line);color: var(--text);font-size: 20px;width: 46px;height: 46px;padding: 0;margin: 0;border-radius: 50%;cursor: pointer;display: none;align-items: center;justify-content: center;backdrop-filter: blur(8px);box-shadow: none;}
+#muteBtn.on { display: flex; }
+#muteBtn:active { transform: scale(0.9); }
+
+/* تأثيرات اللمس (القلوب) */
+.touch-heart {
+  position: fixed;
+  pointer-events: none;
+  font-size: 30px;
+  z-index: 9999;
+  animation: floatHeart 1s ease-out forwards;
+  transform: translate(-50%, -50%);
+}
+@keyframes floatHeart {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+  100% { opacity: 0; transform: translate(-50%, -100px) scale(1.5); }
+}
+
+/* === تنسيقات عداد الحب === */
+.love-timer {
+  display: none;
+  margin: 20px auto 30px;
+  padding: 20px;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  width: fit-content;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  animation: fade 2s ease;
+}
+.love-timer.on { display: block; }
+.love-timer h3 {
+  margin: 0 0 15px;
+  font-size: 20px;
+  color: var(--neon2);
+}
+.timer-grid {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  direction: ltr; /* عشان الأرقام تطلع صح */
+}
+.time-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0,0,0,0.3);
+  padding: 10px;
+  border-radius: 12px;
+  min-width: 60px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.time-num {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.time-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+</style>
+</head>
+<body>
+
+<!-- زر كتم الصوت -->
+<button id="muteBtn" aria-label="كتم/تشغيل الصوت">🔊</button>
+
+<!-- الأغنية -->
+<audio id="bgMusic" loop preload="none">
+  <source src="massive.mp3" type="audio/mpeg">
+</audio>
+
+<section class="screen on" id="s1">
+  <div class="beat">💖</div>
+  <h1 class="neon">مين روحي؟</h1>
+  <p>اكتب الجواب وبس</p>
+  <input id="who" placeholder="اكتب هنا..." autocomplete="off">
+  <div class="msg" id="msg"></div>
+  <button id="go1">فتح</button>
+</section>
+
+<section class="screen" id="s2">
+  <!-- شاشة الرسم (العين/القلب) -->
+  <div class="stage" id="stage"><canvas id="cv" aria-label="عين تتحول إلى قلب"></canvas></div>
+  
+  <!-- عداد الحب -->
+  <div class="love-timer" id="loveTimer">
+    <h3>مضى على أول رسالة بيناتنا 💌</h3>
+    <div class="timer-grid">
+      <div class="time-box"><span class="time-num" id="days">0</span><span class="time-label">يوم</span></div>
+      <div class="time-box"><span class="time-num" id="hours">0</span><span class="time-label">ساعة</span></div>
+      <div class="time-box"><span class="time-num" id="minutes">0</span><span class="time-label">دقيقة</span></div>
+      <div class="time-box"><span class="time-num" id="seconds">0</span><span class="time-label">ثانية</span></div>
+    </div>
+  </div>
+
+  <!-- صور الذكريات -->
+  <div class="gallery-wrap" id="galleryWrap">
+    <div class="gallery-title">جزء بسيط من ذكرياتي مع روحي 🤍</div>
+    <div class="gallery" id="gallery">
+      <img src="img1.jpg" class="memory-img" alt="ذكرى 1" onerror="this.style.display='none'">
+      <img src="img2.jpg" class="memory-img" alt="ذكرى 2" onerror="this.style.display='none'">
+      <img src="img3.jpg" class="memory-img" alt="ذكرى 3" onerror="this.style.display='none'">
+      <img src="img4.jpg" class="memory-img" alt="ذكرى 4" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <!-- الكلام -->
+  <div class="cont" id="cont">
+    <h2 class="neon">تكملة 💌</h2>
+    <div id="words" class="neon"></div>
+  </div>
+</section>
+
+<script>
+const TEXT="بعرف إنو الله خلق مليون غيرك، ويمكن في أحلى وأجمل، بس والله ما حدا فيهن بيسوى رمش من عينك يا سوسو، إنتِ غير عن الكل، وإلك مكانة ما حدا بيقدر ياخدها، ولو يرجع فيني الزمن ألف مرة بختارك إنتِ بكل مرة. ❤️";
+const $=id=>document.getElementById(id);
+const show=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');scrollTo(0,0)};
+const norm=s=>s.trim().toLowerCase().replace(/[أإآ]/g,'ا').replace(/\s+/g,' ');
+
+// === تأثير اللمس (القلوب) ===
+document.addEventListener('pointerdown', function(e) {
+  const heart = document.createElement('div');
+  heart.classList.add('touch-heart');
+  heart.innerHTML = '❤️';
+  heart.style.left = e.clientX + 'px';
+  heart.style.top = e.clientY + 'px';
+  document.body.appendChild(heart);
+  setTimeout(() => { heart.remove(); }, 1000);
+});
+
+// === إعدادات الصوت (الأغنية + النبض) ===
+const audio = $('bgMusic');
+const muteBtn = $('muteBtn');
+let audioCtx;
+
+function playHeartbeat() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    const osc1 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(60, audioCtx.currentTime);
+    gain1.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain1.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.1);
+    gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+    osc1.connect(gain1); gain1.connect(audioCtx.destination);
+    osc1.start(); osc1.stop(audioCtx.currentTime + 0.4);
+
+    setTimeout(() => {
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(50, audioCtx.currentTime);
+      gain2.gain.setValueAtTime(0, audioCtx.currentTime);
+      gain2.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.1);
+      gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+      osc2.connect(gain2); gain2.connect(audioCtx.destination);
+      osc2.start(); osc2.stop(audioCtx.currentTime + 0.4);
+    }, 200);
+  } catch(e) { console.log("AudioContext not supported", e); }
+}
+
+setInterval(() => { if(audioCtx && audioCtx.state === 'running') playHeartbeat(); }, 1200);
+
+muteBtn.onclick = () => {
+  if (audio.paused) {
+    audio.play().catch(()=>{});
+    if(audioCtx) audioCtx.resume();
+    muteBtn.textContent = '🔊';
+  } else {
+    audio.pause();
+    if(audioCtx) audioCtx.suspend();
+    muteBtn.textContent = '🔇';
+  }
+};
+
+function check(){
+  const v=norm($('who').value);
+  if(['انا','ana','me','i','سوسو','soso','sousou'].includes(v)){
+    show('s2');
+    
+    audio.volume = 0.4;
+    audio.play().then(() => {
+      muteBtn.classList.add('on');
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      audioCtx.resume();
+    }).catch(e => console.log('Auto-play prevented:', e));
+    
+    start();
+  } else {
+    const i=$('who');
+    i.classList.remove('shake');
+    void i.offsetWidth;
+    i.classList.add('shake');
+    $('msg').textContent='لا لا… الجواب كلمة وحدة بس 😉';
+  }
+}
+$('go1').onclick=check;
+$('who').addEventListener('keydown',e=>{if(e.key==='Enter')check()});
+
+// كود الرسم (العين والقلب)
+const cols=60,rows=60,WORD='loveyou';
+const cv=$('cv'),ctx=cv.getContext('2d');
+const off=document.createElement('canvas');off.width=cols;off.height=rows;
+const g=off.getContext('2d',{willReadFrequently:true});
+let W,cell,T0,delays=[],done=false,colA,colB;
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const smooth=k=>k*k*(3-2*k);
+const circle=(x,y,r)=>{g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fill()};
+const MY=rows*.5,LX=cols*.08,RX=cols*.92,TC=rows*.1,BC=rows*.9;
+function lidPath(){g.beginPath();g.moveTo(LX,MY);g.quadraticCurveTo(cols/2,TC,RX,MY);g.quadraticCurveTo(cols/2,BC,LX,MY);g.closePath()}
+function drawEye(al,px,py){
+  g.save();g.globalAlpha=al;
+  const gr=g.createLinearGradient(0,0,0,rows);gr.addColorStop(0,'#c45a4c');gr.addColorStop(1,'#f2a088');
+  g.fillStyle=gr;g.fillRect(0,0,cols,rows);
+  lidPath();g.fillStyle='#ecebff';g.fill();
+  g.save();lidPath();g.clip();
+  const ix=cols/2+px*cols*.15,iy=MY+py*rows*.05;
+  g.fillStyle='#ffb02e';circle(ix,iy,rows*.27);
+  g.fillStyle='#ffe28c';circle(ix,iy,rows*.2);
+  g.fillStyle='#14101c';circle(ix,iy,rows*.115);
+  g.fillStyle='#ffffff';circle(ix+rows*.04,iy-rows*.04,rows*.035);
+  g.restore();
+  g.lineWidth=2.4;g.strokeStyle='#2a1238';lidPath();g.stroke();
+  g.lineWidth=1.6;
+  for(let k=1;k<18;k++){
+    const t=k/18,a=(1-t)*(1-t),b=2*(1-t)*t,c=t*t;
+    const x=a*LX+b*cols/2+c*RX,y=a*MY+b*TC+c*MY;
+    g.beginPath();g.moveTo(x,y);g.lineTo(x+(t-.5)*5,y-3.2);g.stroke();
+  }
+  g.restore();
+}
+function drawHeart(s){
+  const cy=rows/2-2.5*s;
+  g.save();
+  const gr=g.createLinearGradient(0,rows*.12,0,rows*.92);gr.addColorStop(0,'#ff5c85');gr.addColorStop(1,'#d1002f');
+  g.fillStyle=gr;g.beginPath();
+  for(let i=0;i<=120;i++){
+    const t=i/120*Math.PI*2;
+    const x=cols/2+16*Math.pow(Math.sin(t),3)*s;
+    const y=cy-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*s;
+    i?g.lineTo(x,y):g.moveTo(x,y);
+  }
+  g.closePath();g.fill();g.restore();
+}
+const WP=[[0,0],[-1,.2],[1,-.3],[.6,.6],[-.7,-.4],[0,0]];
+function pupil(el){
+  const f=el/1100,i=Math.floor(f);
+  if(i>=WP.length-1)return WP[WP.length-1];
+  const k=smooth(f-i),a=WP[i],b=WP[i+1];
+  return[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k];
+}
+const C0=5200,C1=8000,M0=8000,MD=4500;
+function frame(now){
+  const el=now-T0;
+  const [px,py]=pupil(el);
+  const me=smooth(clamp((el-M0)/MD,0,1));
+  g.clearRect(0,0,cols,rows);
+  if(me<1)drawEye(1-me,px,py);
+  if(me>0)drawHeart(Math.max(.04,me)*1.72*(me>=1?1+.03*Math.pow(Math.max(0,Math.sin(el*.0045)),6):1));
+  const d=g.getImageData(0,0,cols,rows).data;
+  ctx.clearRect(0,0,W,W);
+  ctx.font='700 '+(cell*1.25).toFixed(1)+'px "Courier New",monospace';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  for(let i=0;i<rows;i++)for(let j=0;j<cols;j++){
+    const n=i*cols+j,dl=delays[n];
+    if(el<dl)continue;
+    const p=n*4,a=d[p+3];
+    if(a<12)continue;
+    const sh=me>=1?.8+.2*Math.sin(el*.004+i*.7+j*.5):1;
+    ctx.globalAlpha=clamp((a/255)*Math.min(1,(el-dl)/300)*sh,0,1);
+    ctx.fillStyle='rgb('+d[p]+','+d[p+1]+','+d[p+2]+')';
+    ctx.fillText(WORD[(i*2+j)%7],(j+.5)*cell,(i+.5)*cell);
+  }
+  ctx.globalAlpha=1;
+  if(el>C0&&el<C1){
+    const k=(el-C0)/(C1-C0),e=smooth(k),u=1-e;
+    const sx=W*.1,sy=W*.95,cx1=W*.05,cy1=W*.3,ex=W/2,ey=W/2;
+    const x=u*u*sx+2*u*e*cx1+e*e*ex,y=u*u*sy+2*u*e*cy1+e*e*ey;
+    ctx.save();ctx.translate(x,y);ctx.rotate(e*6.28);
+    ctx.globalAlpha=Math.min(1,k*5)*(1-clamp((k-.88)/.12,0,1));
+    ctx.font='800 '+((1-e)*W*.26+W*.03).toFixed(1)+'px Tajawal,Arial,sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle='#ffffff';ctx.shadowColor=colA;ctx.shadowBlur=22;
+    ctx.fillText('C',0,0);ctx.restore();
+  }
+  if(!done&&el>M0+MD+1500){done=true;finish()}
+  requestAnimationFrame(frame);
+}
+function start(){
+  const dpr=Math.min(devicePixelRatio||1,2);
+  W=Math.min(innerWidth,720);cell=W/cols;
+  cv.width=W*dpr;cv.height=W*dpr;cv.style.width=W+'px';cv.style.height=W+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const cs=getComputedStyle(document.documentElement);
+  colA=cs.getPropertyValue('--neon').trim()||'#ff1f4b';colB=cs.getPropertyValue('--neon2').trim()||'#ff6b8a';
+  delays=Array.from({length:cols*rows},()=>Math.random()*2500);
+  T0=performance.now();requestAnimationFrame(frame);
+}
+
+// === دالة عداد الحب ===
+function startLoveTimer() {
+  // التاريخ: 27 / 7 / 2026 (الشهر 6 بالبرمجة يعني تموز)
+  const startDate = new Date(2026, 6, 27, 0, 0, 0).getTime();
+
+  function updateTimer() {
+    const now = new Date().getTime();
+    const diff = now - startDate;
+
+    if (diff < 0) return;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    $('days').textContent = days;
+    $('hours').textContent = hours < 10 ? '0' + hours : hours;
+    $('minutes').textContent = minutes < 10 ? '0' + minutes : minutes;
+    $('seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+  }
+
+  updateTimer();
+  setInterval(updateTimer, 1000);
+}
+
+// دالة النهاية
+function finish(){
+  const stage = $('stage');
+  stage.classList.add('hidden');
+  
+  // إظهار العداد
+  $('loveTimer').classList.add('on');
+  startLoveTimer();
+
+  const galleryWrap = $('galleryWrap');
+  galleryWrap.classList.add('on');
+  const imgs = document.querySelectorAll('.memory-img');
+  
+  audio.volume = 0.2; 
+
+  imgs.forEach((img, index) => {
+    setTimeout(() => {
+      img.classList.add('show');
+      if(index === imgs.length - 1) {
+        setTimeout(showText, 2500);
+      }
+    }, index * 900);
+  });
+  
+  if(imgs.length === 0) {
+    setTimeout(showText, 500);
+  }
+}
+
+// دالة ظهور الكلام
+function showText() {
+  const c=$('cont');c.classList.add('on');
+  setTimeout(()=>c.scrollIntoView({behavior:'smooth',block:'center'}),100);
+  const w=$('words');w.textContent='';
+  let i=0;
+  const ch=Array.from(TEXT);
+  const t=setInterval(()=>{
+    w.textContent+=ch[i++];
+    if(i>=ch.length){
+      clearInterval(t);
+      audio.volume = 0.4;
+    }
+  }, 80);
+}
+</script>
+</body>
+</html>
