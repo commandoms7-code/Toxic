@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOX STUDIO | الموقع الرسمي للسيرفر والاستوديو</title>
+    <!-- خطوط Cairo و Tajawal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
+    <!-- مكتبة Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- أيقونات Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        arctic: {
+                            950: '#060b14',
+                            900: '#0b1324',
+                            800: '#13203b',
+                        },
+                        frost: {
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #060b14;
+            color: #f8fafc;
+            font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
+        }
+        /* تأثير الزجاج المتجمد (Frosted Glass) */
+        .frost-glass {
+            background: rgba(15, 23, 42, 0.68);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(125, 211, 252, 0.14);
+        }
+        .frost-glass:hover {
+            border-color: rgba(56, 189, 248, 0.42);
+        }
+        .ice-glow {
+            box-shadow: 0 0 35px -5px rgba(56, 189, 248, 0.35);
+        }
+        .hero-arctic-bg {
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.22) 0%, rgba(6, 11, 20, 0) 60%),
+                radial-gradient(circle at 80% 70%, rgba(14, 165, 233, 0.15) 0%, rgba(6, 11, 20, 0) 50%),
+                linear-gradient(to bottom, rgba(6, 11, 20, 0.35), #060b14);
+        }
+        /* شريط تمرير جليدي */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #060b14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0284c7;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-frost-500 selection:text-white">
+
+    <!-- لوحة تساقط الثلوج التفاعلية (Snowfall Canvas) -->
+    <canvas id="snow-canvas" class="fixed inset-0 pointer-events-none z-30"></canvas>
+
+    <!-- إشعار عائم (Toast Notification) -->
+    <div id="toast" class="fixed bottom-6 left-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="frost-glass border-r-4 border-r-frost-400 px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-frost-500/20 flex items-center justify-center text-frost-400">
+                <i data-lucide="snowflake" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <p id="toast-title" class="font-bold text-sm text-white">تمت العملية بنجاح</p>
+                <p id="toast-desc" class="text-xs text-slate-300">تم تحديث البيانات</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- شريط التنقل العلوي (Sticky Navbar) -->
+    <header class="sticky top-0 z-40 w-full frost-glass border-b border-sky-300/15">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- شعار NOX STUDIO -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-frost-400 via-sky-700 to-slate-900 p-0.5 shadow-lg group-hover:scale-105 transition-transform">
+                        <div class="w-full h-full bg-arctic-950 rounded-[14px] flex items-center justify-center">
+                            <i data-lucide="snowflake" class="w-6 h-6 text-frost-300 drop-shadow-[0_0_8px_rgba(125,211,252,0.8)]"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span style="font-family:'Orbitron',sans-serif" class="text-xl font-black tracking-wider bg-gradient-to-l from-white via-sky-200 to-frost-400 bg-clip-text text-transparent">NOX STUDIO</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 font-semibold">تطوير ومابات عسكرية شتوية</p>
+                    </div>
+                </a>
+
+                <!-- روابط التنقل (Desktop) -->
+                <nav class="hidden lg:flex items-center gap-6 text-sm font-bold text-slate-300">
+                    <a href="#home" class="hover:text-frost-400 transition-colors">الرئيسية</a>
+                    <a href="#facilities" class="hover:text-frost-400 transition-colors">استكشف الماب</a>
+                    <a href="#store" class="hover:text-frost-400 transition-colors flex items-center gap-1.5">
+                        <span>المتجر</span>
+                        <span class="w-2 h-2 rounded-full bg-frost-400 animate-ping"></span>
+                    </a>
+                    <a href="#apply" class="hover:text-frost-400 transition-colors">التقديم والرتب</a>
+                    <a href="#rules" class="hover:text-frost-400 transition-colors">القوانين</a>
+                    <a href="#discord" class="hover:text-indigo-400 transition-colors">الديسكورد</a>
+                </nav>
+
+                <!-- أزرار التحكم: Snowfall Toggle + السلة -->
+                <div class="flex items-center gap-2.5 sm:gap-3">
+                    <!-- زر التحكم بالثلج المطابق لواجهة الماب -->
+                    <button id="snow-toggle-btn" onclick="toggleSnowfall()" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-sky-950/80 hover:bg-sky-900/90 border border-frost-400/40 text-xs font-extrabold text-sky-200 shadow-lg transition-all" title="تفعيل أو إيقاف تساقط الثلوج">
+                        <i data-lucide="snowflake" class="w-4 h-4 text-frost-400 animate-spin" style="animation-duration: 8s;"></i>
+                        <span dir="ltr" id="snow-status-text">Snowfall: ON</span>
+                    </button>
+
+                    <!-- زر فتح السلة -->
+                    <button onclick="toggleCart()" class="relative p-2.5 sm:p-3 rounded-2xl bg-slate-900/90 hover:bg-sky-950/70 border border-sky-400/20 hover:border-frost-400/60 transition-all group">
+                        <i data-lucide="shopping-bag" class="w-5 h-5 text-slate-200 group-hover:text-frost-400 transition-colors"></i>
+                        <span id="cart-badge" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-frost-500 text-arctic-950 text-[11px] font-black flex items-center justify-center shadow-lg">0</span>
+                    </button>
+
+                    <!-- زر قائمة الجوال -->
+                    <button onclick="toggleMobileMenu()" class="lg:hidden p-2.5 rounded-2xl bg-slate-900 border border-white/10 text-slate-200">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- قائمة الجوال -->
+        <div id="mobile-menu" class="hidden lg:hidden border-t border-white/10 bg-arctic-950/95 px-4 pt-3 pb-5 space-y-2">
+            <a href="#home" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl hover:bg-slate-900 font-bold text-sm">الرئيسية</a>
+            <a href="#facilities" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl hover:bg-slate-900 font-bold text-sm text-frost-300">استكشف الماب والمرافق</a>
+            <a href="#store" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl hover:bg-slate-900 font-bold text-sm">متجر الرتب والطيران</a>
+            <a href="#apply" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl hover:bg-slate-900 font-bold text-sm">التقديم على [BOP] والتطوير</a>
+            <a href="#rules" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl hover:bg-slate-900 font-bold text-sm">القوانين</a>
+            <a href="#discord" onclick="toggleMobileMenu()" class="block px-4 py-2.5 rounded-xl hover:bg-slate-900 font-bold text-sm text-indigo-400">سيرفر الديسكورد</a>
+        </div>
+    </header>
+
+    <!-- القسم الرئيسي (Hero Section) -->
+    <section id="home" class="relative pt-10 pb-20 lg:pt-16 lg:pb-28 hero-arctic-bg overflow-hidden">
+        <!-- توهجات خلفية جليدية -->
+        <div class="absolute top-16 right-1/4 w-80 h-80 bg-frost-500/20 rounded-full blur-[130px] pointer-events-none"></div>
+        <div class="absolute bottom-10 left-1/4 w-96 h-96 bg-sky-600/15 rounded-full blur-[140px] pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col items-center text-center max-w-4xl mx-auto space-y-7">
+                
+                <!-- شارة الحالة -->
+                <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full frost-glass border border-frost-400/30 text-sky-200 text-xs sm:text-sm font-bold shadow-lg">
+                    <span class="relative flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+                    </span>
+                    <span>السيرفر يعمل الآن • تحديث الشتاء والمروحيات الهجومية متاح</span>
+                </div>
+
+                <!-- شعار NOX STUDIO الجليدي المخصص (SVG مع رقائق ثلج ومتدليات جليدية) -->
+                <div class="w-full max-w-2xl py-2 animate-float">
+                    <svg class="w-full h-auto drop-shadow-[0_12px_30px_rgba(14,165,233,0.45)]" viewBox="0 0 760 175" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <!-- تدرج الجليد الأزرق العميق -->
+                            <linearGradient id="iceBodyGrad" x1="380" y1="25" x2="380" y2="135" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#e0f2fe"/>
+                                <stop offset="35%" stop-color="#38bdf8"/>
+                                <stop offset="70%" stop-color="#0369a1"/>
+                                <stop offset="100%" stop-color="#0c4a6e"/>
+                            </linearGradient>
+                            <!-- تدرج طبقة الثلج البيضاء أعلى الحروف -->
+                            <linearGradient id="snowCapGrad" x1="380" y1="20" x2="380" y2="65" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#ffffff"/>
+                                <stop offset="100%" stop-color="#bae6fd"/>
+                            </linearGradient>
+                            <filter id="iceGlowFilter" x="-10%" y="-10%" width="120%" height="120%">
+                                <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0284c7" flood-opacity="0.5"/>
+                            </filter>
+                        </defs>
+
+                        <!-- النص الرئيسي NOX STUDIO -->
+                        <g filter="url(#iceGlowFilter)">
+                            <text x="380" y="118" text-anchor="middle" font-family="Orbitron, sans-serif" font-weight="900" font-size="86" textLength="600" lengthAdjust="spacingAndGlyphs" fill="url(#iceBodyGrad)" stroke="#e0f2fe" stroke-width="3">NOX STUDIO</text>
+                        </g>
+
+                        <!-- متدليات جليدية (Icicles) أسفل الحروف لمحاكاة الشعار الرسمي -->
+                        <path d="M98 118 L104 146 L110 118 Z" fill="#bae6fd" opacity="0.9"/>
+                        <path d="M148 118 L153 138 L158 118 Z" fill="#e0f2fe" opacity="0.85"/>
+                        <path d="M215 118 L222 152 L229 118 Z" fill="#7dd3fc" opacity="0.9"/>
+                        <path d="M285 118 L290 140 L295 118 Z" fill="#e0f2fe" opacity="0.9"/>
+                        <path d="M362 118 L368 148 L374 118 Z" fill="#bae6fd" opacity="0.9"/>
+                        <path d="M435 118 L441 142 L447 118 Z" fill="#7dd3fc" opacity="0.85"/>
+                        <path d="M510 118 L517 154 L524 118 Z" fill="#e0f2fe" opacity="0.9"/>
+                        <path d="M595 118 L600 139 L605 118 Z" fill="#bae6fd" opacity="0.9"/>
+                        <path d="M652 118 L658 147 L664 118 Z" fill="#7dd3fc" opacity="0.9"/>
+
+                        <!-- لمعة ثلجية علوية -->
+                        <path d="M85 46 Q120 34 155 46 Q190 36 225 46 Q270 35 315 46" stroke="url(#snowCapGrad)" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+                        <path d="M350 46 Q410 34 470 46 Q530 35 590 46 Q640 36 675 46" stroke="url(#snowCapGrad)" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+                    </svg>
+                </div>
+
+                <p class="text-slate-200 text-base sm:text-xl max-w-3xl leading-relaxed font-semibold">
+                    عالم عسكري متكامل وأجواء شتوية واقعية في روبلوكس — مقر قيادة حديث بتصميم زجاجي، مروحيات هجومية ونقل بمقصورات قيادة حقيقية، وبرامج تدريب الضباط <span class="text-frost-400 font-black">[BOP]</span>.
+                </p>
+
+                <!-- أزرار الدعوة لاتخاذ إجراء -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto pt-2">
+                    <button onclick="openPlayModal()" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-l from-frost-500 to-sky-600 hover:from-frost-400 hover:to-frost-500 text-arctic-950 font-black text-base shadow-xl ice-glow transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3">
+                        <i data-lucide="gamepad-2" class="w-6 h-6"></i>
+                        <span>العب الآن في روبلوكس</span>
+                    </button>
+
+                    <a href="#store" class="w-full sm:w-auto px-8 py-4 rounded-2xl frost-glass hover:bg-slate-900/90 border border-frost-400/40 text-frost-300 font-extrabold text-base transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3">
+                        <i data-lucide="shield-check" class="w-5 h-5"></i>
+                        <span>متجر الرتب والطيران</span>
+                    </a>
+
+                    <button onclick="copyDiscordInvite()" class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-indigo-600/90 hover:bg-indigo-500 text-white font-extrabold text-base shadow-lg shadow-indigo-600/25 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2.5">
+                        <i data-lucide="message-square" class="w-5 h-5"></i>
+                        <span>سيرفر الديسكورد</span>
+                    </button>
+                </div>
+
+                <!-- شريط إحصائيات السيرفر المباشر -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5 w-full pt-8">
+                    <div class="frost-glass p-4 rounded-2xl text-center border-b-2 border-b-emerald-400">
+                        <p id="live-players-count" class="text-2xl sm:text-3xl font-black text-emerald-400">128</p>
+                        <p class="text-xs text-slate-400 font-bold mt-1">اللاعبين المتصلين</p>
+                    </div>
+                    <div class="frost-glass p-4 rounded-2xl text-center border-b-2 border-b-frost-400">
+                        <p class="text-2xl sm:text-3xl font-black text-white">+640K</p>
+                        <p class="text-xs text-slate-400 font-bold mt-1">إجمالي الزيارات</p>
+                    </div>
+                    <div class="frost-glass p-4 rounded-2xl text-center border-b-2 border-b-sky-400">
+                        <p class="text-2xl sm:text-3xl font-black text-frost-300">98%</p>
+                        <p class="text-xs text-slate-400 font-bold mt-1">تقييم اللاعبين</p>
+                    </div>
+                    <div class="frost-glass p-4 rounded-2xl text-center border-b-2 border-b-indigo-400">
+                        <p class="text-2xl sm:text-3xl font-black text-indigo-300">v3.4</p>
+                        <p class="text-xs text-slate-400 font-bold mt-1">تحديث الشتاء</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم معرض الماب والمرافق (Map Showcase & Facilities) -->
+    <section id="facilities" class="py-20 relative border-t border-sky-400/10 bg-arctic-900/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-2xl mx-auto mb-12 space-y-3">
+                <span class="inline-block px-3.5 py-1 rounded-full bg-frost-500/10 border border-frost-400/30 text-frost-300 text-xs font-extrabold">
+                    جولة داخل عالم NOX STUDIO
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-black text-white">
+                    مرافق ومناطق <span class="text-frost-400">الماب الواقعية</span>
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    تصميم معماري متقن يجمع بين المقرات الحديثة، القواعد الجوية، والطبيعة الشتوية المتجمدة.
+                </p>
+            </div>
+
+            <!-- أزرار التبديل التفاعلية بين المناطق -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8" id="zone-tabs">
+                <button onclick="selectZone('hq')" data-zone="hq" class="zone-tab active p-4 rounded-2xl text-right border transition-all bg-sky-950/80 border-frost-400 shadow-lg">
+                    <div class="flex items-center justify-between mb-1">
+                        <i data-lucide="building-2" class="w-5 h-5 text-frost-400"></i>
+                        <span class="text-[11px] font-bold text-frost-300">01</span>
+                    </div>
+                    <p class="font-extrabold text-sm sm:text-base text-white">المقر الرئيسي الحديث</p>
+                </button>
+
+                <button onclick="selectZone('heli')" data-zone="heli" class="zone-tab p-4 rounded-2xl text-right border transition-all frost-glass border-white/10 hover:border-frost-400/40">
+                    <div class="flex items-center justify-between mb-1">
+                        <i data-lucide="plane" class="w-5 h-5 text-slate-400"></i>
+                        <span class="text-[11px] font-bold text-slate-400">02</span>
+                    </div>
+                    <p class="font-extrabold text-sm sm:text-base text-slate-200">حظيرة المروحيات والطيران</p>
+                </button>
+
+                <button onclick="selectZone('winter')" data-zone="winter" class="zone-tab p-4 rounded-2xl text-right border transition-all frost-glass border-white/10 hover:border-frost-400/40">
+                    <div class="flex items-center justify-between mb-1">
+                        <i data-lucide="trees" class="w-5 h-5 text-slate-400"></i>
+                        <span class="text-[11px] font-bold text-slate-400">03</span>
+                    </div>
+                    <p class="font-extrabold text-sm sm:text-base text-slate-200">الوادي الشتوي والبحيرة</p>
+                </button>
+
+                <button onclick="selectZone('bop')" data-zone="bop" class="zone-tab p-4 rounded-2xl text-right border transition-all frost-glass border-white/10 hover:border-frost-400/40">
+                    <div class="flex items-center justify-between mb-1">
+                        <i data-lucide="award" class="w-5 h-5 text-slate-400"></i>
+                        <span class="text-[11px] font-bold text-slate-400">04</span>
+                    </div>
+                    <p class="font-extrabold text-sm sm:text-base text-slate-200">برنامج الضباط [BOP]</p>
+                </button>
+            </div>
+
+            <!-- بطاقة العرض التفاعلية للمنطقة المختارة -->
+            <div id="zone-display-card" class="frost-glass rounded-[32px] p-6 sm:p-10 border border-frost-400/30 shadow-2xl">
+                <!-- يتم التحديث ديناميكياً عبر JS -->
+            </div>
+
+        </div>
+    </section>
+
+    <!-- قسم متجر السيرفر والرتب (NOX Store) -->
+    <section id="store" class="py-20 relative border-t border-sky-400/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-2xl mx-auto mb-12 space-y-3">
+                <span class="inline-block px-3.5 py-1 rounded-full bg-frost-500/10 border border-frost-400/30 text-frost-300 text-xs font-extrabold">
+                    متجر الرتب والصلاحيات الرسمية
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-black text-white">
+                    متجر <span class="text-frost-400">NOX STUDIO</span>
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    احصل على رخصة قيادة المروحيات الهجومية، رتب القيادة في [BOP]، أو مميزات VIP الشتوية.
+                </p>
+            </div>
+
+            <!-- أزرار تصفية المتجر -->
+            <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mb-10" id="category-filters">
+                <button onclick="filterStore('all')" data-cat="all" class="filter-btn active px-5 py-2.5 rounded-xl text-sm font-black bg-frost-500 text-arctic-950 shadow-lg transition-all">
+                    الكل
+                </button>
+                <button onclick="filterStore('aviation')" data-cat="aviation" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-bold frost-glass text-slate-300 hover:text-white transition-all">
+                    طيران ومروحيات
+                </button>
+                <button onclick="filterStore('ranks')" data-cat="ranks" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-bold frost-glass text-slate-300 hover:text-white transition-all">
+                    رتب عسكرية وقيادية
+                </button>
+                <button onclick="filterStore('vip')" data-cat="vip" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-bold frost-glass text-slate-300 hover:text-white transition-all">
+                    حزم VIP ومميزات
+                </button>
+                <button onclick="filterStore('support')" data-cat="support" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-bold frost-glass text-slate-300 hover:text-white transition-all">
+                    عتاد ودعم
+                </button>
+            </div>
+
+            <!-- شبكة المنتجات -->
+            <div id="store-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- يتم التحديث عبر JS -->
+            </div>
+
+        </div>
+    </section>
+
+    <!-- قسم التقديم على الفروع وفريق التطوير (Recruitment Section) -->
+    <section id="apply" class="py-20 relative border-t border-sky-400/10 bg-arctic-900/40">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="frost-glass rounded-[32px] p-6 sm:p-10 border border-frost-400/25 shadow-2xl">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <!-- معلومات التقديم -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-xs font-extrabold">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            التقديم مفتوح حالياً
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-black text-white leading-snug">
+                            انضم إلى طاقم <span class="text-frost-400">NOX STUDIO</span> أو الفروع العسكرية
+                        </h2>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            هل لديك خبرة في البرمجة (Lua)، البناء في Roblox Studio، أو ترغب بالانضمام إلى برنامج الضباط <span class="text-frost-300 font-bold">[BOP]</span> والقوات الجوية؟ قدّم طلبك الآن!
+                        </p>
+                        <ul class="space-y-2.5 text-xs sm:text-sm text-slate-300 pt-2">
+                            <li class="flex items-center gap-2.5">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-frost-400 shrink-0"></i>
+                                <span>ترقيات مستمرة حسب التفاعل والانضباط</span>
+                            </li>
+                            <li class="flex items-center gap-2.5">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-frost-400 shrink-0"></i>
+                                <span>مكافآت روبوكس للمطورين والمشرفين المتميزين</span>
+                            </li>
+                            <li class="flex items-center gap-2.5">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-frost-400 shrink-0"></i>
+                                <span>صلاحيات خاصة داخل الماب وسيرفر الديسكورد</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- نموذج التقديم التفاعلي -->
+                    <form onsubmit="submitApplication(event)" class="lg:col-span-7 bg-arctic-950/80 p-6 rounded-2xl border border-white/10 space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 mb-1.5">حسابك في روبلوكس *</label>
+                                <input id="app-roblox" type="text" required placeholder="مثال: Nox_Pilot" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 focus:border-frost-400 focus:outline-none text-sm text-white font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-400 mb-1.5">يوزر الديسكورد *</label>
+                                <input id="app-discord" type="text" required placeholder="مثال: noxdev#0001" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 focus:border-frost-400 focus:outline-none text-sm text-white font-bold">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1.5">القسم أو الفرع المطلوب *</label>
+                            <select id="app-division" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 focus:border-frost-400 focus:outline-none text-sm text-white font-bold">
+                                <option value="برنامج الضباط [BOP]">برنامج الضباط [BOP] - Officers Program</option>
+                                <option value="القوات الجوية وسلاح المروحيات">القوات الجوية وسلاح المروحيات</option>
+                                <option value="فريق التطوير والبرمجة (Roblox Studio)">فريق التطوير والبرمجة (Roblox Studio)</option>
+                                <option value="الإدارة والرقابة داخل السيرفر">الإدارة والرقابة داخل السيرفر</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1.5">نبذة عن خبرتك ولماذا تريد الانضمام *</label>
+                            <textarea id="app-reason" rows="3" required placeholder="اكتب خبرتك في القيادة، الطيران، أو التطوير في روبلوكس ستوديو..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 focus:border-frost-400 focus:outline-none text-sm text-white"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 rounded-2xl bg-gradient-to-l from-frost-500 to-sky-600 hover:from-frost-400 hover:to-frost-500 text-arctic-950 font-black text-sm shadow-lg ice-glow transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>إرسال طلب الانضمام وإصدار كود التقديم</span>
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم القوانين (Rules Accordion) -->
+    <section id="rules" class="py-20 border-t border-sky-400/10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 space-y-3">
+                <span class="inline-block px-3.5 py-1 rounded-full bg-slate-800 border border-white/10 text-slate-300 text-xs font-extrabold">
+                    الانضباط العسكري والاحترام
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-black text-white">
+                    قوانين سيرفر <span class="text-frost-400">NOX STUDIO</span>
+                </h2>
+                <p class="text-slate-400 text-sm">
+                    الالتزام بالقوانين يضمن تجربة لعب احترافية وواقعية للجميع.
+                </p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="frost-glass rounded-2xl overflow-hidden">
+                    <button onclick="toggleAccordion(this)" class="w-full px-6 py-5 text-right flex items-center justify-between font-extrabold text-base text-white hover:text-frost-400 transition-colors">
+                        <span class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-xl bg-frost-500/20 text-frost-400 flex items-center justify-center text-sm font-black">01</span>
+                            احترام التسلسل القيادي وأنظمة برنامج الضباط [BOP]
+                        </span>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content hidden px-6 pb-5 pt-1 text-slate-400 text-sm leading-relaxed border-t border-white/5">
+                        يجب على جميع المتدربين والأفراد الالتزام بتعليمات الضباط والمدربين داخل المقر الرئيسي وميدان التدريب، وعدم مقاطعة الطوابير أو التجمعات الرسمية.
+                    </div>
+                </div>
+
+                <div class="frost-glass rounded-2xl overflow-hidden">
+                    <button onclick="toggleAccordion(this)" class="w-full px-6 py-5 text-right flex items-center justify-between font-extrabold text-base text-white hover:text-frost-400 transition-colors">
+                        <span class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-sm font-black">02</span>
+                            قوانين الطيران واستخدام المروحيات الهجومية
+                        </span>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content hidden px-6 pb-5 pt-1 text-slate-400 text-sm leading-relaxed border-t border-white/5">
+                        يُمنع التحليق المنخفض فوق المقر الزجاجي أو إطلاق الصواريخ العشوائي في المناطق الآمنة والبحيرة الشتوية. استخدام المروحيات الهجومية متاح فقط للمصرح لهم أو أثناء المناورات.
+                    </div>
+                </div>
+
+                <div class="frost-glass rounded-2xl overflow-hidden">
+                    <button onclick="toggleAccordion(this)" class="w-full px-6 py-5 text-right flex items-center justify-between font-extrabold text-base text-white hover:text-frost-400 transition-colors">
+                        <span class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-xl bg-frost-500/20 text-frost-400 flex items-center justify-center text-sm font-black">03</span>
+                            منع الغش واستغلال الثغرات (Exploits & Glitches)
+                        </span>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content hidden px-6 pb-5 pt-1 text-slate-400 text-sm leading-relaxed border-t border-white/5">
+                        أي محاولة لاستخدام سكربتات خارجية أو تخريب تجربة اللاعبين تعرض حسابك للحظر الفوري والدائم من جميع مابات NOX STUDIO.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم الديسكورد (Discord Banner) -->
+    <section id="discord" class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="relative rounded-[32px] overflow-hidden p-8 sm:p-12 bg-gradient-to-l from-indigo-950 via-slate-900 to-sky-950 border border-frost-400/30 shadow-2xl">
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-right">
+                    <div class="space-y-3 max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-frost-500/20 text-frost-300 text-xs font-bold">
+                            <i data-lucide="radio" class="w-4 h-4"></i>
+                            <span>مركز القيادة والتواصل</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-4xl font-black text-white">
+                            انضم إلى سيرفر ديسكورد <span class="text-frost-400">NOX STUDIO</span>
+                        </h2>
+                        <p class="text-slate-300 text-sm sm:text-base">
+                            تابع مواعيد التدريبات العسكرية، تسريبات التطوير في روبلوكس ستوديو، وافتح تذكرة لتفعيل رتبك المشتراة من المتجر.
+                        </p>
+                    </div>
+                    <button onclick="copyDiscordInvite()" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-base shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-3">
+                        <i data-lucide="copy" class="w-5 h-5"></i>
+                        <span>نسخ رابط الديسكورد</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- التذييل (Footer) -->
+    <footer class="border-t border-white/10 bg-arctic-950 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-frost-500/15 border border-frost-400/40 flex items-center justify-center text-frost-300">
+                        <i data-lucide="snowflake" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="font-black text-white text-lg" style="font-family:'Orbitron',sans-serif">NOX STUDIO</p>
+                        <p class="text-xs text-slate-400">جميع الحقوق محفوظة © 2026 فريق تطوير NOX STUDIO</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button onclick="openPlayModal()" class="px-4 py-2.5 rounded-xl frost-glass hover:text-frost-300 text-xs font-bold transition-colors flex items-center gap-2">
+                        <i data-lucide="gamepad-2" class="w-4 h-4"></i>
+                        <span>جروب روبلوكس</span>
+                    </button>
+                    <button onclick="copyDiscordInvite()" class="px-4 py-2.5 rounded-xl frost-glass hover:text-indigo-400 text-xs font-bold transition-colors flex items-center gap-2">
+                        <i data-lucide="disc" class="w-4 h-4"></i>
+                        <span>ديسكورد</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- سلة المشتريات الجانبية (Cart Drawer) -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 hidden">
+        <div onclick="toggleCart()" class="absolute inset-0 bg-black/75 backdrop-blur-sm"></div>
+        <div class="absolute top-0 left-0 h-full w-full max-w-md bg-arctic-950 border-r border-frost-400/20 shadow-2xl flex flex-col justify-between p-6">
+            <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                <div class="flex items-center gap-2.5">
+                    <i data-lucide="shopping-bag" class="w-6 h-6 text-frost-400"></i>
+                    <h3 class="text-xl font-black text-white">سلة المشتريات</h3>
+                </div>
+                <button onclick="toggleCart()" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div id="cart-items-container" class="flex-1 overflow-y-auto py-4 space-y-3"></div>
+
+            <div class="pt-4 border-t border-white/10 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1.5">اسم حسابك في روبلوكس (Roblox Username) *</label>
+                    <input id="roblox-username-input" type="text" placeholder="مثال: NoxCommander" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 focus:border-frost-400 focus:outline-none text-sm text-white font-bold">
+                </div>
+
+                <div class="flex items-center justify-between text-base font-extrabold">
+                    <span class="text-slate-400">الإجمالي المطلوب:</span>
+                    <span id="cart-total-price" class="text-xl text-frost-300">0 R$</span>
+                </div>
+
+                <button onclick="checkoutOrder()" class="w-full py-3.5 rounded-2xl bg-gradient-to-l from-frost-500 to-sky-600 hover:from-frost-400 hover:to-frost-500 text-arctic-950 font-black text-sm shadow-lg ice-glow transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="file-check-2" class="w-5 h-5"></i>
+                    <span>إصدار إيصال الطلب</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة الدخول للماب (Play Now Modal) -->
+    <div id="play-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div onclick="closePlayModal()" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        <div class="relative w-full max-w-md frost-glass rounded-3xl p-6 sm:p-8 border border-frost-400/40 shadow-2xl text-center space-y-5">
+            <button onclick="closePlayModal()" class="absolute top-4 left-4 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-frost-500/20 border border-frost-400/40 flex items-center justify-center text-frost-400">
+                <i data-lucide="gamepad-2" class="w-8 h-8"></i>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-black text-white">دخول سيرفر NOX STUDIO</h3>
+                <p class="text-slate-400 text-sm mt-1">انسخ معرف الماب (Place ID) للانضمام مباشرة في روبلوكس</p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-arctic-950/90 border border-white/10 space-y-2">
+                <p class="text-xs text-slate-400 font-bold">اسم الماب الرسمي:</p>
+                <p class="text-lg font-black text-frost-300 select-all">NOX STUDIO | Winter Military RP</p>
+                <div class="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">معرف الماب (Place ID):</span>
+                    <span class="font-mono font-bold text-white">9274810539</span>
+                </div>
+            </div>
+
+            <button onclick="copyMapId()" class="w-full py-3.5 rounded-2xl bg-frost-500 hover:bg-frost-400 text-arctic-950 font-black text-sm transition-all flex items-center justify-center gap-2">
+                <i data-lucide="copy" class="w-4 h-4"></i>
+                <span>نسخ معرف الماب (Place ID)</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- نافذة الإيصال الموحدة (للشراء أو للتقديم) -->
+    <div id="receipt-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div onclick="closeReceiptModal()" class="absolute inset-0 bg-black/85 backdrop-blur-md"></div>
+        <div class="relative w-full max-w-md frost-glass rounded-3xl p-6 sm:p-8 border border-frost-400/50 shadow-2xl space-y-5">
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 mx-auto rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400">
+                    <i data-lucide="check-circle-2" class="w-8 h-8"></i>
+                </div>
+                <h3 id="modal-receipt-title" class="text-2xl font-black text-white">تم إصدار الإيصال بنجاح!</h3>
+                <p id="modal-receipt-subtitle" class="text-xs text-slate-300">انسخ الكود وأرسله في تذكرة الديسكورد لإكمال الإجراء</p>
+            </div>
+
+            <div id="receipt-box" class="p-4 rounded-2xl bg-arctic-950 border border-white/10 text-xs space-y-2 font-medium text-slate-200"></div>
+
+            <div class="flex gap-3">
+                <button onclick="copyReceiptText()" class="flex-1 py-3.5 rounded-2xl bg-frost-500 hover:bg-frost-400 text-arctic-950 font-black text-sm transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="copy" class="w-4 h-4"></i>
+                    <span>نسخ التفاصيل</span>
+                </button>
+                <button onclick="closeReceiptModal()" class="px-5 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm">
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- السكربت التفاعلي -->
+    <script>
+        // 1. بيانات مناطق ومرافق ماب NOX STUDIO
+        const mapZones = {
+            hq: {
+                title: "المقر الرئيسي الحديث (Modern HQ)",
+                badge: "منطقة القيادة المركزية",
+                desc: "مبنى قيادة عصري بواجهات زجاجية بانورامية وإضاءة نيون زرقاء محيطة بالساحات الخارجية، يضم قاعات الاجتماعات، مكاتب الإدارة، ونقاط التجمع الرئيسية.",
+                highlights: ["تصميم معماري حديث بإضاءة متكاملة", "ساحات استعراض خارجية واسعة", "بوابات أمنية ونظام دخول ذكي"],
+                svg: `
+                    <svg class="w-full h-56 sm:h-64" viewBox="0 0 400 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="220" rx="20" fill="#09111e"/>
+                        <!-- شمس دافئة في الخلفية -->
+                        <circle cx="320" cy="52" r="26" fill="#fde047" opacity="0.25"/>
+                        <circle cx="320" cy="52" r="14" fill="#fef08a" opacity="0.8"/>
+                        <!-- المبنى الزجاجي الحديث -->
+                        <rect x="75" y="55" width="210" height="115" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+                        <rect x="85" y="65" width="190" height="35" fill="#e2e8f0" opacity="0.9"/>
+                        <rect x="85" y="108" width="110" height="55" fill="#0f172a" stroke="#7dd3fc" stroke-width="1"/>
+                        <!-- خطوط الواجهة الزجاجية -->
+                        <line x1="112" y1="108" x2="112" y2="163" stroke="#38bdf8" stroke-opacity="0.4"/>
+                        <line x1="140" y1="108" x2="140" y2="163" stroke="#38bdf8" stroke-opacity="0.4"/>
+                        <line x1="168" y1="108" x2="168" y2="163" stroke="#38bdf8" stroke-opacity="0.4"/>
+                        <!-- الساحة والدرج -->
+                        <rect x="30" y="170" width="340" height="12" rx="3" fill="#334155"/>
+                        <line x1="30" y1="170" x2="370" y2="170" stroke="#38bdf8" stroke-width="2"/>
+                        <rect x="115" y="163" width="60" height="14" fill="#cbd5e1"/>
+                        <!-- أشجار الصنوبر -->
+                        <polygon points="55,170 70,115 85,170" fill="#15803d"/>
+                        <polygon points="58,145 70,98 82,145" fill="#16a34a"/>
+                        <polygon points="300,170 315,112 330,170" fill="#15803d"/>
+                        <polygon points="303,142 315,92 327,142" fill="#16a34a"/>
+                    </svg>
+                `
+            },
+            heli: {
+                title: "حظيرة الطيران والمروحيات الهجومية",
+                badge: "القوات الجوية • Apache & Blackhawk",
+                desc: "حظيرة طيران متطورة تضم مروحيات هجومية ونقل عسكري مزودة بمقصورة قيادة تفاعلية كاملة (Cockpit)، عدادات طيران حقيقية، وأنظمة تسليح متقدمة.",
+                highlights: ["مقصورة قيادة داخلية واقعية بالكامل", "مروحيات هجومية ونقل تكتيكي", "مهبط مروحيات مجهز للإقلاع الليلي"],
+                svg: `
+                    <svg class="w-full h-56 sm:h-64" viewBox="0 0 400 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="220" rx="20" fill="#09111e"/>
+                        <!-- شبكة رادار خلفية -->
+                        <circle cx="200" cy="110" r="80" stroke="#38bdf8" stroke-opacity="0.15" stroke-dasharray="4 4"/>
+                        <circle cx="200" cy="110" r="45" stroke="#38bdf8" stroke-opacity="0.2"/>
+                        <!-- جسم المروحية الهجومية -->
+                        <path d="M120 115 L230 100 L275 115 L260 132 L145 132 Z" fill="#475569" stroke="#94a3b8" stroke-width="1.5"/>
+                        <!-- قمرة القيادة الزجاجية -->
+                        <path d="M230 102 L272 115 L235 120 Z" fill="#38bdf8" fill-opacity="0.55" stroke="#bae6fd"/>
+                        <!-- ذيل المروحية -->
+                        <path d="M125 118 L75 108 L72 95 L84 95 L88 110 L125 125 Z" fill="#334155" stroke="#64748b"/>
+                        <!-- المروحة العلوية -->
+                        <line x1="95" y1="88" x2="305" y2="88" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/>
+                        <rect x="196" y="88" width="8" height="14" fill="#94a3b8"/>
+                        <!-- جناح التسليح والصواريخ -->
+                        <rect x="185" y="122" width="35" height="6" rx="2" fill="#1e293b"/>
+                        <rect x="190" y="130" width="28" height="5" rx="2" fill="#facc15"/>
+                        <!-- قواعد الهبوط -->
+                        <line x1="165" y1="132" x2="155" y2="148" stroke="#94a3b8" stroke-width="2"/>
+                        <line x1="225" y1="132" x2="235" y2="148" stroke="#94a3b8" stroke-width="2"/>
+                        <line x1="140" y1="148" x2="255" y2="148" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                `
+            },
+            winter: {
+                title: "الوادي الشتوي والبحيرة المتجمدة",
+                badge: "نظام طقس ديناميكي • Snowfall",
+                desc: "طبيعة ثلجية خلابة تضم غابات صنوبر كثيفة، جسراً خشبياً مضاءً يعبر فوق البحيرة المتجمدة، وأكواخاً جبلية مع زر تحكم مباشر بتساقط الثلوج.",
+                highlights: ["جسر خشبي مضاء فوق المياه المتجمدة", "نظام تساقط ثلوج قابل للتحكم (ON/OFF)", "مناطق استرخاء واستكشاف جبلية"],
+                svg: `
+                    <svg class="w-full h-56 sm:h-64" viewBox="0 0 400 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="220" rx="20" fill="#081221"/>
+                        <!-- جبال ثلجية -->
+                        <polygon points="20,145 105,65 190,145" fill="#1e293b"/>
+                        <polygon points="105,65 82,88 105,82 128,88" fill="#f8fafc"/>
+                        <polygon points="150,145 255,55 360,145" fill="#0f172a"/>
+                        <polygon points="255,55 228,80 255,74 282,80" fill="#f8fafc"/>
+                        <!-- البحيرة المتجمدة -->
+                        <rect x="20" y="145" width="360" height="55" rx="10" fill="#0c4a6e"/>
+                        <!-- الجسر الخشبي المضاء -->
+                        <path d="M140 165 Q230 142 330 165" stroke="#b45309" stroke-width="8" stroke-linecap="round"/>
+                        <circle cx="165" cy="153" r="3" fill="#fef08a"/>
+                        <circle cx="235" cy="147" r="3" fill="#fef08a"/>
+                        <circle cx="305" cy="154" r="3" fill="#fef08a"/>
+                        <!-- ثلج متساقط -->
+                        <circle cx="80" cy="40" r="2" fill="#ffffff" opacity="0.8"/>
+                        <circle cx="190" cy="30" r="2.5" fill="#bae6fd" opacity="0.9"/>
+                        <circle cx="310" cy="45" r="2" fill="#ffffff" opacity="0.8"/>
+                    </svg>
+                `
+            },
+            bop: {
+                title: "أكاديمية وبرنامج الضباط [BOP]",
+                badge: "التدريب العسكري والقيادة",
+                desc: "منظومة تدريب متكاملة لتأهيل الضباط والقادة داخل سيرفر NOX STUDIO، تشمل اختبارات اللياقة، التكتيك الميداني، وقيادة الوحدات الجوية والبرية.",
+                highlights: ["رتب عسكرية متدرجة ومعتمدة", "مناورات وتدريبات دورية بإشراف القادة", "شارات تعريفية خاصة فوق الشخصية"],
+                svg: `
+                    <svg class="w-full h-56 sm:h-64" viewBox="0 0 400 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="220" rx="20" fill="#09111e"/>
+                        <!-- درع برنامج الضباط BOP -->
+                        <path d="M200 35 L265 60 V115 C265 155 236 182 200 195 C164 182 135 155 135 115 V60 L200 35 Z" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+                        <!-- نجوم الرتبة -->
+                        <polygon points="200,62 204,72 215,72 206,78 209,88 200,82 191,88 194,78 185,72 196,72" fill="#38bdf8"/>
+                        <text x="200" y="125" text-anchor="middle" fill="#ffffff" font-family="Cairo, sans-serif" font-weight="900" font-size="28" letter-spacing="3">[BOP]</text>
+                        <text x="200" y="148" text-anchor="middle" fill="#7dd3fc" font-family="Cairo, sans-serif" font-weight="700" font-size="11">OFFICERS PROGRAM</text>
+                    </svg>
+                `
+            }
+        };
+
+        // 2. منتجات متجر NOX STUDIO
+        const storeProducts = [
+            {
+                id: 1,
+                name: "رخصة طيار حربي (مروحية Apache)",
+                category: "aviation",
+                categoryLabel: "طيران ومروحيات",
+                price: 450,
+                badge: "الأكثر طلباً",
+                badgeColor: "bg-frost-400 text-arctic-950",
+                icon: "plane",
+                desc: "صلاحية قيادة المروحيات الهجومية من الحظيرة الرئيسية مع أسلحة وصواريخ كاملة."
+            },
+            {
+                id: 2,
+                name: "رتبة ضابط قيادي [BOP Commander]",
+                category: "ranks",
+                categoryLabel: "رتب عسكرية",
+                price: 600,
+                badge: "قيادي",
+                badgeColor: "bg-emerald-400 text-arctic-950",
+                icon: "shield",
+                desc: "رتبة ضابط معتمد في برنامج [BOP] مع زي عسكري خاص وصلاحية تنظيم التدريبات."
+            },
+            {
+                id: 3,
+                name: "عضوية VIP الشتوية (Arctic VIP)",
+                category: "vip",
+                categoryLabel: "حزم VIP",
+                price: 300,
+                badge: "مميز",
+                badgeColor: "bg-sky-300 text-arctic-950",
+                icon: "snowflake",
+                desc: "تاج جليدي بالشات + أزياء شتوية حصرية + الدخول إلى صالة كبار الشخصيات بالمقر."
+            },
+            {
+                id: 4,
+                name: "حزمة المقر الخاص والمركبات المصفحة",
+                category: "vip",
+                categoryLabel: "حزم VIP",
+                price: 500,
+                badge: "حصري",
+                badgeColor: "bg-indigo-400 text-arctic-950",
+                icon: "car-front",
+                desc: "فتح أسطول السيارات المصفحة والدفع الرباعي المخصصة للطرق الثلجية الجبلية."
+            },
+            {
+                id: 5,
+                name: "صلاحية الراديو العسكري والعتاد المتقدم",
+                category: "support",
+                categoryLabel: "عتاد ودعم",
+                price: 150,
+                badge: "تكتيكي",
+                badgeColor: "bg-slate-700 text-white",
+                icon: "radio",
+                desc: "جهاز تواصل لاسلكي مع الوحدات، منظار ليلي، وحقيبة إسعافات وعتاد ميداني."
+            },
+            {
+                id: 6,
+                name: "داعم NOX STUDIO الرسمي",
+                category: "support",
+                categoryLabel: "دعم الاستوديو",
+                price: 200,
+                badge: "دعم المطورين",
+                badgeColor: "bg-frost-500 text-arctic-950",
+                icon: "sparkles",
+                desc: "لقب داعم رسمي في السيرفر والديسكورد + أولوية الدخول عند امتلاء السيرفر."
+            }
+        ];
+
+        let cart = [];
+        let lastReceiptText = "";
+        let isSnowing = true;
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            selectZone('hq');
+            renderStore('all');
+            lucide.createIcons();
+            initSnowfall();
+            startLiveCounter();
+        });
+
+        // تبديل عرض مرافق الماب
+        function selectZone(zoneKey) {
+            const zone = mapZones[zoneKey];
+            if (!zone) return;
+
+            document.querySelectorAll('.zone-tab').forEach(btn => {
+                if (btn.dataset.zone === zoneKey) {
+                    btn.className = 'zone-tab active p-4 rounded-2xl text-right border transition-all bg-sky-950/80 border-frost-400 shadow-lg';
+                    btn.querySelector('i').className = 'w-5 h-5 text-frost-400';
+                    btn.querySelector('p').className = 'font-extrabold text-sm sm:text-base text-white';
+                } else {
+                    btn.className = 'zone-tab p-4 rounded-2xl text-right border transition-all frost-glass border-white/10 hover:border-frost-400/40';
+                    btn.querySelector('i').className = 'w-5 h-5 text-slate-400';
+                    btn.querySelector('p').className = 'font-extrabold text-sm sm:text-base text-slate-200';
+                }
+            });
+
+            const container = document.getElementById('zone-display-card');
+            container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <div class="lg:col-span-6 rounded-2xl overflow-hidden border border-frost-400/20 bg-arctic-950/90 p-2">
+                        ${zone.svg}
+                    </div>
+                    <div class="lg:col-span-6 space-y-4">
+                        <span class="inline-block px-3 py-1 rounded-full bg-frost-500/15 border border-frost-400/30 text-frost-300 text-xs font-extrabold">
+                            ${zone.badge}
+                        </span>
+                        <h3 class="text-2xl sm:text-3xl font-black text-white">${zone.title}</h3>
+                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">${zone.desc}</p>
+                        <div class="space-y-2 pt-2">
+                            ${zone.highlights.map(h => `
+                                <div class="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-sky-200">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4 text-frost-400 shrink-0"></i>
+                                    <span>${h}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // عرض منتجات المتجر
+        function renderStore(category) {
+            const grid = document.getElementById('store-grid');
+            const filtered = category === 'all' ? storeProducts : storeProducts.filter(p => p.category === category);
+
+            grid.innerHTML = filtered.map(product => `
+                <div class="frost-glass rounded-3xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 group">
+                    <div>
+                        <div class="flex items-center justify-between mb-5">
+                            <span class="text-xs font-bold text-slate-400 px-3 py-1 rounded-full bg-slate-900 border border-white/5">
+                                ${product.categoryLabel}
+                            </span>
+                            <span class="text-[11px] font-black px-3 py-1 rounded-full ${product.badgeColor}">
+                                ${product.badge}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center gap-4 my-2">
+                            <div class="w-14 h-14 rounded-2xl bg-sky-950/80 border border-frost-400/30 flex items-center justify-center shrink-0">
+                                <i data-lucide="${product.icon}" class="w-7 h-7 text-frost-400 group-hover:scale-110 transition-transform"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base sm:text-lg font-black text-white group-hover:text-frost-300 transition-colors">${product.name}</h3>
+                                <p class="text-xl font-black text-frost-400 mt-1">${product.price} <span class="text-xs font-bold text-slate-400">Robux</span></p>
+                            </div>
+                        </div>
+
+                        <p class="text-slate-400 text-sm leading-relaxed my-4">${product.desc}</p>
+                    </div>
+
+                    <button onclick="addToCart(${product.id})" class="w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-frost-500 border border-frost-400/20 hover:border-frost-400 text-white hover:text-arctic-950 font-black text-sm transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>إضافة إلى السلة</span>
+                    </button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function filterStore(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.cat === category) {
+                    btn.className = 'filter-btn active px-5 py-2.5 rounded-xl text-sm font-black bg-frost-500 text-arctic-950 shadow-lg transition-all';
+                } else {
+                    btn.className = 'filter-btn px-5 py-2.5 rounded-xl text-sm font-bold frost-glass text-slate-300 hover:text-white transition-all';
+                }
+            });
+            renderStore(category);
+        }
+
+        // إدارة السلة
+        function addToCart(id) {
+            const product = storeProducts.find(p => p.id === id);
+            if (!product) return;
+            const existing = cart.find(item => item.id === id);
+            if (existing) existing.qty += 1;
+            else cart.push({ ...product, qty: 1 });
+            updateCartUI();
+            showToast('تمت الإضافة للسلة', `أضفت "${product.name}" بنجاح.`);
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const badge = document.getElementById('cart-badge');
+            const container = document.getElementById('cart-items-container');
+            const totalEl = document.getElementById('cart-total-price');
+
+            const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+            const totalPrice = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+            badge.textContent = totalQty;
+            totalEl.textContent = `${totalPrice} R$`;
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-center py-12 space-y-3">
+                        <i data-lucide="shopping-bag" class="w-10 h-10 text-slate-600"></i>
+                        <p class="text-slate-400 font-bold text-sm">سلة المشتريات فارغة</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = cart.map(item => `
+                    <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-white/10 flex items-center justify-between gap-3">
+                        <div>
+                            <h4 class="text-sm font-extrabold text-white">${item.name}</h4>
+                            <p class="text-xs text-frost-300 font-bold mt-0.5">${item.price} R$ × ${item.qty}</p>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="p-2 rounded-xl bg-rose-950/60 hover:bg-rose-600 text-rose-300 hover:text-white transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+            lucide.createIcons();
+        }
+
+        function checkoutOrder() {
+            if (cart.length === 0) {
+                showToast('السلة فارغة', 'اختر رتبة أو رخصة طيران أولاً.');
+                return;
+            }
+            const usernameInput = document.getElementById('roblox-username-input');
+            const username = usernameInput.value.trim();
+            if (!username) {
+                usernameInput.focus();
+                showToast('مطلوب اسم الحساب', 'اكتب اسم حسابك في روبلوكس لإصدار الإيصال.');
+                return;
+            }
+
+            const code = 'NOX-' + Math.floor(1000 + Math.random() * 9000);
+            const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            const itemsStr = cart.map(i => `• ${i.name} (×${i.qty}) - ${i.price * i.qty} R$`).join('\n');
+
+            lastReceiptText = `❄️ طلب متجر NOX STUDIO\nكود الطلب: ${code}\nحساب روبلوكس: ${username}\nالمشتريات:\n${itemsStr}\nالإجمالي: ${total} Robux`;
+
+            document.getElementById('modal-receipt-title').textContent = 'تم إصدار إيصال الشراء!';
+            document.getElementById('modal-receipt-subtitle').textContent = 'انسخ الإيصال وأرسله في تذكرة الديسكورد لتفعيل رتبك فوراً';
+            document.getElementById('receipt-box').innerHTML = `
+                <div class="flex justify-between border-b border-white/10 pb-2">
+                    <span class="text-slate-400">كود الطلب:</span>
+                    <span class="font-mono font-black text-frost-300">${code}</span>
+                </div>
+                <div class="flex justify-between border-b border-white/10 pb-2">
+                    <span class="text-slate-400">حساب روبلوكس:</span>
+                    <span class="font-bold text-white">${username}</span>
+                </div>
+                <div class="space-y-1 py-1">
+                    ${cart.map(i => `<div class="flex justify-between"><span>${i.name} (×${i.qty})</span><span>${i.price * i.qty} R$</span></div>`).join('')}
+                </div>
+                <div class="flex justify-between border-t border-white/10 pt-2 text-sm font-black">
+                    <span>الإجمالي:</span>
+                    <span class="text-emerald-400">${total} Robux</span>
+                </div>
+            `;
+
+            toggleCart();
+            document.getElementById('receipt-modal').classList.remove('hidden');
+            cart = [];
+            updateCartUI();
+        }
+
+        // إرسال نموذج التقديم على [BOP] أو التطوير
+        function submitApplication(e) {
+            e.preventDefault();
+            const roblox = document.getElementById('app-roblox').value.trim();
+            const discord = document.getElementById('app-discord').value.trim();
+            const division = document.getElementById('app-division').value;
+            const reason = document.getElementById('app-reason').value.trim();
+            const appCode = 'APP-' + Math.floor(1000 + Math.random() * 9000);
+
+            lastReceiptText = `📋 طلب انضمام جديد - NOX STUDIO\nرقم التقديم: ${appCode}\nحساب روبلوكس: ${roblox}\nالديسكورد: ${discord}\nالفرع المطلوب: ${division}\nالخبرة: ${reason}`;
+
+            document.getElementById('modal-receipt-title').textContent = 'تم تجهيز طلب التقديم!';
+            document.getElementById('modal-receipt-subtitle').textContent = 'انسخ كود التقديم وأرسله في روم التقديمات بالديسكورد';
+            document.getElementById('receipt-box').innerHTML = `
+                <div class="flex justify-between border-b border-white/10 pb-2">
+                    <span class="text-slate-400">رقم التقديم:</span>
+                    <span class="font-mono font-black text-frost-300">${appCode}</span>
+                </div>
+                <div class="flex justify-between border-b border-white/10 pb-2">
+                    <span class="text-slate-400">روبلوكس / ديسكورد:</span>
+                    <span class="font-bold text-white">${roblox} | ${discord}</span>
+                </div>
+                <div class="pt-1">
+                    <span class="text-slate-400 block">الفرع المختار:</span>
+                    <span class="font-bold text-emerald-400">${division}</span>
+                </div>
+            `;
+
+            document.getElementById('receipt-modal').classList.remove('hidden');
+            e.target.reset();
+        }
+
+        // نظام تساقط الثلوج التفاعلي (Canvas Snowfall)
+        function initSnowfall() {
+            const canvas = document.getElementById('snow-canvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const flakes = Array.from({ length: 75 }, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                r: Math.random() * 2.8 + 1,
+                speedY: Math.random() * 1.1 + 0.4,
+                speedX: Math.random() * 0.6 - 0.3,
+                opacity: Math.random() * 0.6 + 0.25
+            }));
+
+            function drawSnow() {
+                ctx.clearRect(0, 0, width, height);
+                if (isSnowing) {
+                    flakes.forEach(f => {
+                        ctx.beginPath();
+                        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(224, 242, 254, ${f.opacity})`;
+                        ctx.fill();
+
+                        f.y += f.speedY;
+                        f.x += f.speedX;
+                        if (f.y > height) {
+                            f.y = -5;
+                            f.x = Math.random() * width;
+                        }
+                        if (f.x > width) f.x = 0;
+                        if (f.x < 0) f.x = width;
+                    });
+                }
+                requestAnimationFrame(drawSnow);
+            }
+            drawSnow();
+        }
+
+        function toggleSnowfall() {
+            isSnowing = !isSnowing;
+            const statusText = document.getElementById('snow-status-text');
+            const btn = document.getElementById('snow-toggle-btn');
+            if (isSnowing) {
+                statusText.textContent = 'Snowfall: ON';
+                btn.classList.add('border-frost-400/40', 'text-sky-200');
+                btn.classList.remove('border-white/10', 'text-slate-400');
+                showToast('الطقس الشتوي', 'تم تفعيل تساقط الثلوج (Snowfall: ON)');
+            } else {
+                statusText.textContent = 'Snowfall: OFF';
+                btn.classList.remove('border-frost-400/40', 'text-sky-200');
+                btn.classList.add('border-white/10', 'text-slate-400');
+                showToast('الطقس الشتوي', 'تم إيقاف تساقط الثلوج (Snowfall: OFF)');
+            }
+        }
+
+        // دوال المساعدة والنسخ
+        function toggleCart() {
+            document.getElementById('cart-drawer').classList.toggle('hidden');
+            updateCartUI();
+        }
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+        function openPlayModal() {
+            document.getElementById('play-modal').classList.remove('hidden');
+        }
+        function closePlayModal() {
+            document.getElementById('play-modal').classList.add('hidden');
+        }
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').classList.add('hidden');
+        }
+        function copyMapId() {
+            copyToClipboard('9274810539');
+            showToast('تم نسخ معرف الماب', '9274810539 - الصقه في روبلوكس للانضمام.');
+        }
+        function copyDiscordInvite() {
+            copyToClipboard('https://discord.gg/noxstudio');
+            showToast('تم نسخ رابط الديسكورد', 'مرحباً بك في مجتمع NOX STUDIO.');
+        }
+        function copyReceiptText() {
+            copyToClipboard(lastReceiptText);
+            showToast('تم النسخ بنجاح!', 'يمكنك لصقه الآن في الديسكورد.');
+        }
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(textarea);
+        }
+        function toggleAccordion(btn) {
+            btn.nextElementSibling.classList.toggle('hidden');
+            btn.querySelector('i').classList.toggle('rotate-180');
+        }
+        let toastTimer;
+        function showToast(title, desc) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-desc').textContent = desc;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3200);
+        }
+        function startLiveCounter() {
+            setInterval(() => {
+                const el = document.getElementById('live-players-count');
+                if (el) el.textContent = Math.floor(122 + Math.random() * 18);
+            }, 6000);
+        }
+    </script>
+</body>
+</html>
